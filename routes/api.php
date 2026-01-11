@@ -13,6 +13,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::get('/books', [BookController::class, 'index']);
+Route::get('/books/{id}', [BookController::class, 'show']);
 Route::get('/category', [CategoryController::class, 'index']);
 
 Route::middleware('auth:api')->group(function () {
