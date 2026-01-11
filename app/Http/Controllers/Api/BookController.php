@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Book;
 use App\Helpers\ApiFormatter;
+use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
@@ -21,9 +22,9 @@ class BookController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title'       => 'required',
-            'author'      => 'required',
-            'year'        => 'required|numeric',
+            'title' => 'required',
+            'author' => 'required',
+            'year' => 'required|numeric',
             'category_id' => 'required|exists:categories,id'
         ]);
 
@@ -37,6 +38,11 @@ class BookController extends Controller
 
         $book = Book::create($request->all());
 
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity' => 'Tambah buku',
+            'endpoint' => request()->path()
+        ]);
         return ApiFormatter::createJson(
             201,
             "Buku berhasil ditambahkan",
@@ -75,6 +81,12 @@ class BookController extends Controller
 
         $book->update($request->all());
 
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity' => 'Update buku',
+            'endpoint' => request()->path()
+        ]);
+
         return ApiFormatter::createJson(
             200,
             "Buku berhasil diupdate",
@@ -94,6 +106,12 @@ class BookController extends Controller
         }
 
         $book->delete();
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity' => 'Delete buku',
+            'endpoint' => request()->path()
+        ]);
 
         return ApiFormatter::createJson(
             200,

@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Helpers\ApiFormatter;
+use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
@@ -34,6 +35,11 @@ class CategoryController extends Controller
 
         $category = Category::create([
             'name' => $request->name
+        ]);
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity' => 'Tambah Kategori',
+            'endpoint' => request()->path()
         ]);
 
         return ApiFormatter::createJson(
@@ -74,6 +80,12 @@ class CategoryController extends Controller
 
         $category->update($request->only('name'));
 
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity' => 'Update Kategori',
+            'endpoint' => request()->path()
+        ]);
+
         return ApiFormatter::createJson(
             200,
             "Kategori berhasil diupdate",
@@ -93,6 +105,12 @@ class CategoryController extends Controller
         }
 
         $category->delete();
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity' => 'Hapus Kategori',
+            'endpoint' => request()->path()
+        ]);
 
         return ApiFormatter::createJson(
             200,
