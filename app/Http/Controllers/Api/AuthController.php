@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\ActivityLog;
 use App\Helpers\ApiFormatter;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -93,6 +94,11 @@ class AuthController extends Controller
                     "Email atau password salah"
                 );
             }
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'activity' => 'Login',
+                'endpoint' => request()->path()
+            ]);
 
             return ApiFormatter::createJson(
                 200,
@@ -102,6 +108,8 @@ class AuthController extends Controller
                     'type' => 'Bearer'
                 ]
             );
+
+
 
 
         } catch (\Exception $e) {
@@ -135,6 +143,12 @@ class AuthController extends Controller
     {
         try {
             auth()->logout();
+
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'activity' => 'Logout',
+                'endpoint' => request()->path()
+            ]);
 
             return ApiFormatter::createJson(
                 200,
